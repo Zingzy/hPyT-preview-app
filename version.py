@@ -4,6 +4,7 @@ except ImportError:
     print("pyinstaller_versionfile is not installed. Please install it using pip.")
     print("Trying to install it...")
     import os
+
     os.system("pip install pyinstaller-versionfile")
     try:
         import pyinstaller_versionfile
