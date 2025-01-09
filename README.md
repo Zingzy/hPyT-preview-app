@@ -51,3 +51,14 @@ Want to try it out right away? Download the latest version from our [releases](h
 ## 🤝 Contributing
 
 Found a bug or want to contribute? Feel free to open an issue or submit a pull request!
+
+---
+
+<h6 align="center">
+© zingzy . 2025
+
+All Rights Reserved</h6>
+
+<p align="center">
+	<a href="https://github.com/zingzy/hPyT-preview-app/blob/main/LICENSE"><img src="https://img.shields.io/static/v1.svg?style=for-the-badge&label=License&message=Apache-2.0&logoColor=d9e0ee&colorA=363a4f&colorB=b7bdf8"/></a>
+</p>
