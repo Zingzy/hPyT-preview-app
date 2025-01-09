@@ -9,6 +9,7 @@ from customtkinter import (
     CTkToplevel,
     CTkScrollableFrame,
 )
+from tkinter import StringVar
 from dataclasses import dataclass
 from typing import Dict
 import pyperclip
@@ -171,6 +172,28 @@ class TitleBarFeature(FeatureFrame):
         self._setup_controls()
 
     def _setup_controls(self):
+        # Create a frame for no_span controls
+        no_span_frame = CTkFrame(self.frame, fg_color=self.theme.secondary_color)
+        no_span_frame.pack(padx=5, pady=5, fill="x")
+        
+        CTkLabel(
+            no_span_frame,
+            text="no_span",
+            font=("Segoe UI", 13),
+        ).pack(side="left", padx=(10, 10), pady=5)
+
+        self.no_span_var = StringVar(value="True")
+        self.no_span_menu = CTkOptionMenu(
+            no_span_frame,
+            values=["True", "False"],
+            variable=self.no_span_var,
+            fg_color=self.theme.button_color,
+            font=("Segoe UI", 13),
+            width=80,
+            command=self._on_no_span_change
+        )
+        self.no_span_menu.pack(side="left", padx=(0, 5), pady=5)
+
         self.toggle_button = CTkButton(
             self.frame,
             text="   Hide",
@@ -181,23 +204,33 @@ class TitleBarFeature(FeatureFrame):
             image=self.images.get("hide"),
             compound="right",
         )
-        self.toggle_button.pack(padx=10, pady=(5, 10), side="bottom")
+        self.toggle_button.pack(padx=10, pady=(5, 10))
 
         self.copy_button = CodeCopyButton(
             self.frame,
             self.theme,
-            """from hPyT import *\n\ntitle_bar.hide(window)\n# title_bar.unhide(window)""",
+            self._get_copy_code(),
         )
-        self.copy_button.pack(padx=10, pady=5, side="bottom")
+        self.copy_button.pack(padx=10, pady=5)
+
+    def _get_copy_code(self) -> str:
+        no_span = self.no_span_var.get()
+        return f"""from hPyT import *\n\ntitle_bar.hide(window, no_span={no_span})\n# title_bar.unhide(window)"""
+
+    def _on_no_span_change(self, _):
+        self.copy_button.code = self._get_copy_code()
 
     def _toggle_title_bar(self):
         if self.toggle_button.cget("text") == "   Hide":
-            title_bar.hide(self.window, no_span=True)
+            no_span = self.no_span_var.get().lower() == "true"
+            title_bar.hide(self.window, no_span=no_span)
             self.toggle_button.configure(
                 text="    Unhide",
                 command=self._toggle_title_bar,
                 image=self.images.get("unhide"),
             )
+            # Update copy code when state changes
+            self.copy_button.code = self._get_copy_code()
         else:
             title_bar.unhide(self.window)
             self.toggle_button.configure(
@@ -205,6 +238,8 @@ class TitleBarFeature(FeatureFrame):
                 command=self._toggle_title_bar,
                 image=self.images.get("hide"),
             )
+            # Update copy code when state changes
+            self.copy_button.code = self._get_copy_code()
 
 
 class RainbowTitleBarFeature(FeatureFrame):
@@ -806,7 +841,7 @@ class ReleaseHistoryFeature:
         top.configure(fg_color=self.theme.primary_color)
         top.iconify()
 
-        title_bar.hide(top)
+        title_bar.hide(top, no_span=True)
 
         close_button = CTkButton(
             top,
