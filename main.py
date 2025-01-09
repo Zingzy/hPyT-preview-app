@@ -590,7 +590,9 @@ class AccentTitlebarFeature(FeatureFrame):
     def _toggle_accent(self):
         if self.toggle_button.cget("text") == "Enable":
             title_bar_color.set_accent(self.window)
-            self.toggle_button.configure(text="Disable", image=self.images.get("disable"))
+            self.toggle_button.configure(
+                text="Disable", image=self.images.get("disable")
+            )
         else:
             title_bar_color.reset(self.window)
             self.toggle_button.configure(text="Enable", image=self.images.get("enable"))
@@ -733,30 +735,32 @@ class ReleaseHistoryFeature:
             "v1.3.7": [
                 "Fix color conversion issue which returned the wrong color when the windows accent color was set to a custom color",
                 "Add handling for WM_NCACTIVATE and WM_NCPAINT messages to improve title bar rendering",
-                "Add dynamic height adjustment to hide_titlebar method using the no_span parameter"
+                "Add dynamic height adjustment to hide_titlebar method using the no_span parameter",
             ],
             "v1.3.6": ["Minor Bug Fixes"],
             "v1.3.5": [
                 "Add feature for automatically changing the accent color of the titlebar and border",
-                "Fix an issue which caused ImportError when used with a python version less than 3.9"
+                "Fix an issue which caused ImportError when used with a python version less than 3.9",
             ],
             "v1.3.4": [
                 "Add method for applying the current windows accent color to the titlebar and border color",
                 "Add method for getting the current windows accent color",
-                "Add type annotations and docstrings to functions for better clarity and autocompletion"
+                "Add type annotations and docstrings to functions for better clarity and autocompletion",
             ],
             "v1.3.3": ["Fixed taskbar unhide/hide bug"],
-            "v1.3.2": ["Add support for synchronizing the rainbow effect with other ui elements."],
+            "v1.3.2": [
+                "Add support for synchronizing the rainbow effect with other ui elements."
+            ],
             "v1.3.1": [
                 "Add support for UI libraries like Kivy, PySimpleGUI, PyGame, etc.",
                 "Improve the rainbow titlebar & border effects.",
-                "Improve the center_relative function & examples."
+                "Improve the center_relative function & examples.",
             ],
             "v1.3.0": [
                 "Add support for setting custom border color",
                 "Add support for rainbow border color effect",
                 "Add support for resetting the titleBar color and titleText color",
-                "Fix an issue which caused the titleBar to appear black after the rainbow titleBar effect was stopped"
+                "Fix an issue which caused the titleBar to appear black after the rainbow titleBar effect was stopped",
             ],
             "v1.2.1": ["Minor Bug Fixes"],
             "v1.2.0": [
