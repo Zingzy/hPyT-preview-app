@@ -175,7 +175,7 @@ class TitleBarFeature(FeatureFrame):
         # Create a frame for no_span controls
         no_span_frame = CTkFrame(self.frame, fg_color=self.theme.secondary_color)
         no_span_frame.pack(padx=5, pady=5, fill="x")
-        
+
         CTkLabel(
             no_span_frame,
             text="no_span",
@@ -190,7 +190,7 @@ class TitleBarFeature(FeatureFrame):
             fg_color=self.theme.button_color,
             font=("Segoe UI", 13),
             width=80,
-            command=self._on_no_span_change
+            command=self._on_no_span_change,
         )
         self.no_span_menu.pack(side="left", padx=(0, 5), pady=5)
 
