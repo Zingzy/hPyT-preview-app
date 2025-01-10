@@ -31,6 +31,8 @@ from hPyT import (
     title_text,
 )
 
+IS_WINDOWS_11 = sys.getwindowsversion().build >= 22000
+
 @dataclass
 class ThemeConfig:
     """Configuration for app theming"""
@@ -265,6 +267,9 @@ class RainbowTitleBarFeature(FeatureFrame):
         )
         self.toggle_button.pack(padx=10, pady=(5, 10), side="bottom")
 
+        if not IS_WINDOWS_11:
+            self.toggle_button.configure(state="disabled")
+
         self.copy_button = CodeCopyButton(
             self.frame,
             self.theme,
@@ -393,6 +398,9 @@ class RainbowBorderFeature(FeatureFrame):
             compound="right",
         )
         self.toggle_button.pack(padx=10, pady=(5, 10), side="bottom")
+
+        if not IS_WINDOWS_11:
+            self.toggle_button.configure(state="disabled")
 
         self.copy_button = CodeCopyButton(
             self.frame,
@@ -613,6 +621,9 @@ class AccentTitlebarFeature(FeatureFrame):
             compound="right",
         )
         self.toggle_button.pack(padx=10, pady=(5, 10), side="bottom")
+
+        if not IS_WINDOWS_11:
+            self.toggle_button.configure(state="disabled")
 
         self.copy_button = CodeCopyButton(
             self.frame,
