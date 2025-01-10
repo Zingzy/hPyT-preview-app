@@ -707,6 +707,7 @@ class StylizedTextFeature(FeatureFrame):
         self._setup_controls()
 
     def _setup_controls(self):
+        self.style_var = StringVar(value="normal")
         self.style_menu = CTkOptionMenu(
             self.frame,
             values=[
@@ -722,6 +723,7 @@ class StylizedTextFeature(FeatureFrame):
                 "style 9",
                 "style 10",
             ],
+            variable=self.style_var,
             command=self._change_style,
             fg_color=self.theme.button_color,
             font=("Segoe UI", 13),
@@ -731,9 +733,23 @@ class StylizedTextFeature(FeatureFrame):
         self.copy_button = CodeCopyButton(
             self.frame,
             self.theme,
-            """from hPyT import *\n\ntitle_text.stylize(window, 1) # 1 is the style number\n# title_text.reset(window) # to reset the title text to normal""",
+            self._get_copy_code(),
         )
         self.copy_button.pack(padx=10, pady=5, side="bottom")
+
+        # Set up trace to update copy code when style changes
+        self.style_var.trace_add("write", self._on_style_change)
+
+    def _get_copy_code(self) -> str:
+        style = self.style_var.get()
+        if style == "normal":
+            return """from hPyT import *\n\ntitle_text.reset(window) # to reset the title text to normal"""
+        else:
+            style_num = style.split(" ")[-1]
+            return f"""from hPyT import *\n\ntitle_text.stylize(window, {style_num}) # {style_num} is the style number\n# title_text.reset(window) # to reset the title text to normal"""
+
+    def _on_style_change(self, *args):
+        self.copy_button.code = self._get_copy_code()
 
     def _change_style(self, style: str):
         if style == "normal":
