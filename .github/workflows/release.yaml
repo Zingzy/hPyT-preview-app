@@ -23,7 +23,7 @@ jobs:
           - python-version: 3.12
             target: "hPyT-Preview-${{ github.event.inputs.release_tag || github.event.release.tag_name }}"
           - python-version: 3.7
-            target: "hPyT-Legacy-${{ github.event.inputs.release_tag || github.event.release.tag_name }}"
+            target: "hPyT-Preview-win7-${{ github.event.inputs.release_tag || github.event.release.tag_name }}"
 
     steps:
       - name: Checkout a specific release
