@@ -18,9 +18,9 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: [3.12, 3.7]
+        python-version: [3.13, 3.7]
         include:
-          - python-version: 3.12
+          - python-version: 3.13
             target: "hPyT-Preview-${{ github.event.inputs.release_tag || github.event.release.tag_name }}"
           - python-version: 3.7
             target: "hPyT-Preview-win7-${{ github.event.inputs.release_tag || github.event.release.tag_name }}"
@@ -71,6 +71,7 @@ jobs:
           path: dist/${{ matrix.target }}.exe
 
       - name: Upload to release
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
           files: dist/${{ matrix.target }}.exe
