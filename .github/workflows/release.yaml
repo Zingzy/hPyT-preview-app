@@ -3,6 +3,12 @@ name: Build and Release
 on:
   release:
     types: [created]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag for the build'
+        required: true
+        default: 'manual-trigger'
 
 permissions:
   contents: write
@@ -10,14 +16,25 @@ permissions:
 jobs:
   build:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: [3.12, 3.7]
+        include:
+          - python-version: 3.12
+            target: "hPyT-Preview-${{ github.event.inputs.release_tag || github.event.release.tag_name }}"
+          - python-version: 3.7
+            target: "hPyT-Legacy-${{ github.event.inputs.release_tag || github.event.release.tag_name }}"
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout a specific release
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.release_tag || github.event.release.tag_name }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
 
       - name: Install UPX using Chocolatey
         run: |
@@ -31,13 +48,13 @@ jobs:
           pip install -r requirements.txt
 
       - name: Generate version file
-        run: python version.py ${{ github.event.release.tag_name }}
+        run: python version.py ${{ github.event.inputs.release_tag || github.event.release.tag_name }}
 
       - name: Build executable
         run: |
           pyinstaller --noconfirm --onefile --windowed `
             --icon="app-assets/icon.ico" `
-            --name="hPyT-Preview-${{ github.event.release.tag_name }}" `
+            --name="${{ matrix.target }}" `
             --clean `
             --upx-dir="$env:UPX_DIR" `
             --version-file="versionfile.txt" `
@@ -50,12 +67,12 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: hPyT-Preview-${{ github.event.release.tag_name }}-win64
-          path: dist/hPyT-Preview-${{ github.event.release.tag_name }}.exe
+          name: ${{ matrix.target }}-win64
+          path: dist/${{ matrix.target }}.exe
 
       - name: Upload to release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/hPyT-Preview-${{ github.event.release.tag_name }}.exe
+          files: dist/${{ matrix.target }}.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
