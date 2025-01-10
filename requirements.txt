@@ -1,8 +1,7 @@
 customtkinter==5.2.2
 darkdetect==0.8.0
 hPyT==1.3.7
-packaging==24.2
-pillow==11.0.0
+packaging==24.0,<=24.2
+pillow==9.5.0,<=11.0.0
 pyperclip==1.9.0
-pywinstyles==1.8
 win32mica==3.0

@@ -775,12 +775,7 @@ class ThemeManager:
                 HWND=self.window.frame(), Theme=MicaTheme.DARK, Style=MicaStyle.ALT
             )
         except Exception:
-            try:
-                import pywinstyles
-
-                pywinstyles.apply_style(self.window, "aero")
-            except Exception:
-                self._apply_fallback_theme()
+            self._apply_fallback_theme()
 
     def _apply_fallback_theme(self):
         self.window.configure(fg_color=self.theme.fallback_bg_color)
@@ -918,14 +913,9 @@ class ReleaseHistoryFeature:
 
             ApplyMica(HWND=top.frame(), Theme=MicaTheme.DARK, Style=MicaStyle.ALT)
         except Exception:
-            try:
-                import pywinstyles
-
-                pywinstyles.apply_style(top, "aero")
-            except Exception:
-                top.configure(fg_color=self.theme.fallback_bg_color)
-                close_button.configure(fg_color=self.theme.fallback_bg_color)
-                main_frame.configure(fg_color=self.theme.fallback_bg_color)
+            top.configure(fg_color=self.theme.fallback_bg_color)
+            close_button.configure(fg_color=self.theme.fallback_bg_color)
+            main_frame.configure(fg_color=self.theme.fallback_bg_color)
 
         top.bind("<Escape>", lambda e: [top.grab_release(), top.destroy()])
         top.deiconify()
