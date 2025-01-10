@@ -31,7 +31,6 @@ from hPyT import (
     title_text,
 )
 
-
 @dataclass
 class ThemeConfig:
     """Configuration for app theming"""
@@ -204,14 +203,14 @@ class TitleBarFeature(FeatureFrame):
             image=self.images.get("hide"),
             compound="right",
         )
-        self.toggle_button.pack(padx=10, pady=(5, 10))
+        self.toggle_button.pack(padx=10, pady=(5, 10), side="bottom")
 
         self.copy_button = CodeCopyButton(
             self.frame,
             self.theme,
             self._get_copy_code(),
         )
-        self.copy_button.pack(padx=10, pady=5)
+        self.copy_button.pack(padx=10, pady=5, side="bottom")
 
     def _get_copy_code(self) -> str:
         no_span = self.no_span_var.get()
