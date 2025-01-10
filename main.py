@@ -33,6 +33,7 @@ from hPyT import (
 
 IS_WINDOWS_11 = sys.getwindowsversion().build >= 22000
 
+
 @dataclass
 class ThemeConfig:
     """Configuration for app theming"""
