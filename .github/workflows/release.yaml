@@ -8,7 +8,7 @@ on:
       release_tag:
         description: 'Release tag for the build'
         required: true
-        default: 'manual-trigger'
+        default: 'v1.3.7.0' # Hard-Coded First Release
 
 permissions:
   contents: write
