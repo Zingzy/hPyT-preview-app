@@ -9,6 +9,7 @@ from customtkinter import (
     CTkToplevel,
     CTkScrollableFrame,
 )
+import customtkinter
 from tkinter import StringVar
 from dataclasses import dataclass
 from typing import Dict
@@ -29,9 +30,12 @@ from hPyT import (
     rainbow_title_bar,
     rainbow_border,
     title_text,
+    window_dwm,
+    corner_radius,
 )
 
-IS_WINDOWS_11 = sys.getwindowsversion().build >= 22000
+customtkinter.set_appearance_mode("Dark")
+IS_WINDOWS_11: bool = sys.getwindowsversion().build >= 22000
 
 
 @dataclass
@@ -176,7 +180,7 @@ class TitleBarFeature(FeatureFrame):
     def _setup_controls(self):
         # Create a frame for no_span controls
         no_span_frame = CTkFrame(self.frame, fg_color=self.theme.secondary_color)
-        no_span_frame.pack(padx=5, pady=5, fill="x")
+        no_span_frame.pack(padx=5, pady=(20, 0), fill="x")
 
         CTkLabel(
             no_span_frame,
@@ -196,6 +200,18 @@ class TitleBarFeature(FeatureFrame):
         )
         self.no_span_menu.pack(side="left", padx=(0, 5), pady=5)
 
+        self.rtl_toggle = CTkButton(
+            self.frame,
+            text="Enable RTL",
+            command=self._on_rtl_change,
+            fg_color=self.theme.button_color,
+            hover_color=self.theme.button_hover_color,
+            font=("Segoe UI", 13),
+            image=self.images.get("enable"),
+            compound="right",
+        )
+        self.rtl_toggle.pack(padx=10, pady=(5, 10), side="bottom")
+
         self.toggle_button = CTkButton(
             self.frame,
             text="   Hide",
@@ -206,7 +222,7 @@ class TitleBarFeature(FeatureFrame):
             image=self.images.get("hide"),
             compound="right",
         )
-        self.toggle_button.pack(padx=10, pady=(5, 10), side="bottom")
+        self.toggle_button.pack(padx=10, pady=5, side="bottom")
 
         self.copy_button = CodeCopyButton(
             self.frame,
@@ -221,6 +237,14 @@ class TitleBarFeature(FeatureFrame):
 
     def _on_no_span_change(self, _):
         self.copy_button.code = self._get_copy_code()
+
+    def _on_rtl_change(self):
+        if self.rtl_toggle.cget("text") == "Enable RTL":
+            window_dwm.toggle_rtl_layout(self.window, enabled=True)
+            self.rtl_toggle.configure(text="Disable RTL", image=self.images.get("disable"))
+        else:
+            window_dwm.toggle_rtl_layout(self.window, enabled=False)
+            self.rtl_toggle.configure(text="Enable RTL", image=self.images.get("enable"))
 
     def _toggle_title_bar(self):
         if self.toggle_button.cget("text") == "   Hide":
@@ -644,6 +668,56 @@ class AccentTitlebarFeature(FeatureFrame):
             self.toggle_button.configure(text="Enable", image=self.images.get("enable"))
 
 
+class CornerRadiusFeature(FeatureFrame):
+    """Window corner radius control feature"""
+
+    def __init__(self, parent, theme: ThemeConfig, window: CTk):
+        super().__init__(
+            parent,
+            theme,
+            "Corner Radius",
+            "Change the corner radius of the window",
+        )
+        self.window = window
+        self._setup_controls()
+
+    def _setup_controls(self):
+        self.radius_var = StringVar(value="round")
+        self.radius_menu = CTkOptionMenu(
+            self.frame,
+            values=["small-round", "square", "round"],
+            variable=self.radius_var,
+            command=self._change_radius,
+            fg_color=self.theme.button_color,
+            font=("Segoe UI", 13),
+        )
+        self.radius_menu.pack(padx=10, pady=(5, 10), side="bottom")
+
+        self.copy_button = CodeCopyButton(
+            self.frame,
+            self.theme,
+            self._get_copy_code(),
+        )
+        self.copy_button.pack(padx=10, pady=5, side="bottom")
+
+        self.radius_var.trace_add("write", self._on_radius_change)
+
+    def _get_copy_code(self) -> str:
+        radius = self.radius_var.get()
+        if radius == "small-round":
+            return """from hPyT import *\ncorner_radius.set(window, "small-round")"""
+        elif radius == "square":
+            return """from hPyT import *\ncorner_radius.set(window, "square")"""
+        else:
+            return """from hPyT import *\ncorner_radius.set(window, "round")"""
+
+    def _on_radius_change(self, *args):
+        self.copy_button.code = self._get_copy_code()
+
+    def _change_radius(self, radius: str):
+        corner_radius.set(self.window, radius)
+
+
 class RelativeCenterFeature(FeatureFrame):
     """Relative center feature"""
 
@@ -789,6 +863,13 @@ class ReleaseHistoryFeature:
         self.theme = theme
         self.images = images
         self.release_history_data = {
+            "v1.4.0": [
+                "Add new feature for customizing the corner radius of the window using window_dwm.set_corner_radius()",
+                "Add new feature for manipulating the non-client area of the window using window_dwm.set_nonclient_area()",
+                "Fix the issue with stylize text not looking for changes made by the user by implementing proper title change detection",
+                "Fix the issue with title text not being consistent on older versions of Windows by adding fallback rendering",
+                "Add support for x86/x32 python architecture by implementing proper pointer size handling",
+            ],
             "v1.3.7": [
                 "Fix color conversion issue which returned the wrong color when the windows accent color was set to a custom color",
                 "Add handling for WM_NCACTIVATE and WM_NCPAINT messages to improve title bar rendering",
@@ -1023,27 +1104,27 @@ class HPyTPreview:
             row=2, column=0, sticky="nsew", padx=(10, 0), pady=(10, 5)
         )
 
+        self.corner_radius_feature = CornerRadiusFeature(
+            self.window, self.theme, self.window
+        )
+        self.corner_radius_feature.grid(
+            row=2, column=1, sticky="nsew", padx=(10, 0), pady=(10, 5)
+        )
+
         self.opacity_feature = OpacityFeature(self.window, self.theme, self.window)
         self.opacity_feature.grid(
-            row=2, column=1, sticky="nsew", padx=(10, 0), pady=(10, 5)
+            row=2, column=2, sticky="nsew", padx=(10, 0), pady=(10, 5)
         )
 
         self.flash_feature = WindowFlashFeature(self.window, self.theme, self.window)
         self.flash_feature.grid(
-            row=2, column=2, sticky="nsew", padx=(10, 0), pady=(10, 5)
+            row=2, column=3, sticky="nsew", padx=(10, 0), pady=(10, 5)
         )
 
         self.stylized_text_feature = StylizedTextFeature(
             self.window, self.theme, self.window
         )
         self.stylized_text_feature.grid(
-            row=2, column=3, sticky="nsew", padx=(10, 0), pady=(10, 5)
-        )
-
-        self.animations_feature = AnimationsFeature(
-            self.window, self.theme, self.window
-        )
-        self.animations_feature.grid(
             row=2, column=4, sticky="nsew", padx=(10, 0), pady=(10, 5)
         )
 
