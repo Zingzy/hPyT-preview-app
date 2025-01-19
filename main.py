@@ -241,10 +241,14 @@ class TitleBarFeature(FeatureFrame):
     def _on_rtl_change(self):
         if self.rtl_toggle.cget("text") == "Enable RTL":
             window_dwm.toggle_rtl_layout(self.window, enabled=True)
-            self.rtl_toggle.configure(text="Disable RTL", image=self.images.get("disable"))
+            self.rtl_toggle.configure(
+                text="Disable RTL", image=self.images.get("disable")
+            )
         else:
             window_dwm.toggle_rtl_layout(self.window, enabled=False)
-            self.rtl_toggle.configure(text="Enable RTL", image=self.images.get("enable"))
+            self.rtl_toggle.configure(
+                text="Enable RTL", image=self.images.get("enable")
+            )
 
     def _toggle_title_bar(self):
         if self.toggle_button.cget("text") == "   Hide":
